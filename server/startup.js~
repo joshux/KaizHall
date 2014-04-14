@@ -1,0 +1,4 @@
+Meteor.startup(function(){
+  Rooms.update({}, { $set: { messages: [], currentUserIds: [] } });
+  Accounts.createUser({username:'anonymous'});
+});

@@ -1,0 +1,39 @@
+<template name="roomSubmit">
+  <div class="container">
+    <form class="main">
+      <div class="control-group">
+	<label class="control-label" for="name">Room Name</label>
+	<div class="controls">
+	  <input name="name" type="text" value="" placeholder="Input room name"/>
+	</div>
+      </div>
+      
+      <div class="control-group">
+	<label class="control-label" for="description">Description</label>
+	<div class="controls">
+	  <textarea name="description" type="text" value=""></textarea>
+	</div>
+      </div>
+      
+      <div class="control-group">
+	<label class="control-label" for="pomo-minutes">Pomodoro Time: </label>
+	<div class="controls">
+	  <input name="pomo-minutes" type="text" value="" placeholder="minutes"/>
+	</div>
+      </div>
+      
+      <div class="control-group">
+	<label class="control-label" for="pomo-minutes">Break Time: </label>
+	<div class="controls">
+	  <input name="break-minutes" type="text" value="" placeholder="minutes"/>
+	</div>
+      </div>
+      
+      <div class="control-group">
+	<div class="controls">
+	  <input type="submit" value="Submit" class="btn btn-primary"/>
+	</div>
+      </div>
+    </form>
+  </div>
+</template>

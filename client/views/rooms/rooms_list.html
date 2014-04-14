@@ -1,0 +1,15 @@
+<template name="roomsList">
+  <div class="container">
+    {{#each rooms}}
+      <div class="room">
+        <div class="room-content">
+          <h3>{{name}}</h3>
+          <div>
+            {{description}}
+          </div>
+        </div>
+        <a href="{{pathFor 'roomPage'}}" class="discuss btn">Enter Room</a>
+      </div>
+    {{/each}}
+  </div>
+</template>
