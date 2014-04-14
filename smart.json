@@ -8,7 +8,7 @@
     "iron-router": {},
     "accounts-ui-bootstrap-3": {},
     "bootboxjs": {
-      "path":"packages/bootboxjs"
+      
     }
   }
 }
