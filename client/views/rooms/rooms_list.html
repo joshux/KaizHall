@@ -1,5 +1,5 @@
 <template name="roomsList">
-  <div class="container">
+  <div class="container header-padding">
     {{#each rooms}}
       <div class="room">
         <div class="room-content">
@@ -8,7 +8,7 @@
             {{description}}
           </div>
         </div>
-        <a href="{{pathFor 'roomPage'}}" class="discuss btn">Enter Room</a>
+        <a href="{{pathFor 'roomPage'}}" class="discuss btn btn-info">Enter Room</a>
       </div>
     {{/each}}
   </div>

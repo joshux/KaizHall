@@ -1,32 +1,33 @@
 <template name="roomPage">
-  <div id="chat-room" class="container-fluid">
-    <div class="row-fluid" style="height:100%">
-      <div id="chat" class="col-md-10 col-sm-10 col-xs-12" style="height:100%; position:">
-        <div id="video" >
-          <div id="myPublisherDiv">
+  <div id="chat-room" style="height:100%; padding: 0px">
+      <div id="chat" style="background-color: #1b1c23; height:100%; margin-right: 220px; position:relative;">
+        <div id="video" style="height:100%; padding-bottom: 180px; overflow:hidden;" >
+          <div id="myPublisherDiv" style="">
             
           </div>
         </div>
 	
-        <div id="chat-text" style="height:200px; position:absolute; bottom: 2px;">
-          <div id="chat-messages">
+        <div id="chat-text" style="background-color: white; height:180px; width:100%; position:absolute; bottom: 0px; ">
+          <div id="chat-messages" style="height:147px; border-width:0px 0 0px 0px;  border-color: #dddbdb; border-style: solid">
             {{#each messages}}
-              <pre>{{senderName}}: {{chatMessage}}</pre>
+              <div class="message" style="display:block; margin: 0 5px;"><span style="float:right;">time</span>{{senderName}}: {{chatMessage}}</div>
             {{/each}}
           </div>
 	  
           <div id="chat-input">
-            <form id="chat-form">
-              <input name="chatInput" type="text"/>
-              <input id="enter" type="submit" value="Enter" class="btn btn-primary"/>
+            <form id="chat-form" class="form-inline" role="form">
+	      <input id="enter" type="submit" value="Enter" class="btn btn-primary" style="float:right">
+	      <div style="overflow:hidden">
+		<input name="chatInput" class="form-control" style="width:100%;">
+              </div>
             </form>
           </div>
         </div>
       </div>
       
-      <div id="panel" class="col-md-2 col-sm-2 hidden-xs">
+      <div id="panel" style="background-color: #918ea0; position:absolute; top: 0; right: 0; height:100%; width: 220px; padding: 10px; border-left: solid 0px #dddbdb">
         <div id="pomodoro-timer">
-          <div id="timer" class="timer">
+          <div id="timer" class="timer" style="border: 1px solid #EEE; border-radius: 0.5em; font-size: 4em; display: inline-block; margin: 0.5em 0; padding: 0.5em;">
             {{time}}
           </div>
           <form class="form-inline" role="form">
@@ -54,7 +55,5 @@
           </ul>
         </div>
       </div>
-      
-    </div>
   </div>
 </template>

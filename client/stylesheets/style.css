@@ -1,19 +1,8 @@
-html, body, #chat-room {
+html, body{
   height: 100%;
 }
-body {
-  padding-top: 70px;
-  padding-bottom: 30px;
+.header-padding {
+  padding-top: 50px;  /*bootstrap header = 50px */
 }
 
-#pomo-break label{
-  display: inline-block;
-  float: left;
-}
 
-#pomo-break input{
-  display: inline-block;
-  width:100%;
-}
-
-#timer { border: 1px solid #EEE; border-radius: 0.5em; font-size: 4em; display: inline-block; margin: 0.5em 0; padding: 0.5em; }
