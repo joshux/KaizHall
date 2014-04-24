@@ -32,9 +32,13 @@
           </div>
           <form class="form-inline" role="form">
             <div id="timer-control" class="form-group">
-              <button id="start" class="btn btn-primary">start</button>
-              <button id="break" class="btn btn-primary">break</button>
-              <button id="stop" class="btn btn-primary">stop</button>
+	      {{#if userIsOwner}}
+		<button id="start" class="btn btn-primary">start</button>
+		<button id="break" class="btn btn-primary">break</button>
+		<button id="stop" class="btn btn-primary">stop</button>
+		<button id="pause" class="btn btn-primary">pause</button>
+		<button id="resume" class="btn btn-primary">resume</button>
+              {{/if}}
             </div>
             
             <div id="pomo-break" class="form-group">

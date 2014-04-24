@@ -12,30 +12,30 @@ var timer = (function(){
   var intervalId;
   var currentDate;
   
-  
-  //private
-  function runTimer(cb){
-    stop();
-    currentDate = new Date();
-    intervalId = setInterval(update, delay, cb);
-  }  
-  function update(cb){
+  var callback;
+  var paused;
+  //private 
+  function update(){
     var newDate = new Date();
-    setTimeLeft( timeLeft - (newDate - currentDate) );// change to new Date()...
+    setTimeLeft( getTimeLeft() - (newDate - currentDate) );// change to new Date()...
     currentDate = newDate;
-    if(timeLeft <= 0){
-      //timeLeft = 0;
-      setTimeLeft(timeLeft);
-      stop(cb);
+    
+    if(getTimeLeft() <= 0){
+      stop(callback);
       return;
     }
   }
+  //public
+  function runTimer(cb){
+    callback = cb;
+    currentDate = new Date();
+    intervalId = setInterval(update, delay);
+  }
+  
   function setTimeLeft(time){
     _dep.changed();
     timeLeft = time;
   }
-  
-  //public
   function init(){
     setTimeLeft(0);
   }
@@ -43,32 +43,44 @@ var timer = (function(){
     _dep.depend();
     return timeLeft; 
   }
-  function stop(cb){
-    clearInterval(intervalId);
-    cb && cb();
-  }
   function setTimeMin(pomoMinutes, breakMinutes){
     pomoMin = pomoMinutes;
     breakMin = breakMinutes;
   }
   function start(cb){
+    stop();
     timeLeft = pomoMin*1000*60;
     runTimer(cb);
   }
   function breakTimer(cb){
+    stop();
     timeLeft = breakMin*1000*60;
     runTimer(cb);
   }
-  function pause(){
-    //not yet
+  function pause(cb){
+    paused = true;
+    clearInterval(intervalId);
+    cb && cb();
+  }
+  function stop(cb){
+    setTimeLeft(0);
+    clearInterval(intervalId);
+    cb && cb();
+  }
+  function resume(){
+    if(paused){
+      paused = false;
+      runTimer(callback);
+    }
   }
   return {
     setTimeMin: setTimeMin,
     init: init,
     start: start,
+    breakTimer: breakTimer,
     pause: pause,
     stop: stop,
-    breakTimer: breakTimer,
+    resume: resume,
     getTimeLeft: getTimeLeft
   };
 }());
@@ -87,7 +99,7 @@ function msToString(ms) {
 }
 Template.roomPage.helpers({
   messages: function() {
-    return this.messages;// wrong
+    return this.messages;// temp hack
   },
   users: function() {
     var anonymous = Meteor.users.findOne({username: 'anonymous'});
@@ -98,12 +110,15 @@ Template.roomPage.helpers({
     var userIdArray = Meteor.presences.find({state:{currentRoomId: roomId}}).map(function(obj){
       return obj.userId || anonymous_id;
     });
-    var users = Meteor.users.find({ _id: {$in:userIdArray}}); console.log(users.fetch());
+    var users = Meteor.users.find({ _id: {$in:userIdArray}});
     return users;
   },
   time: function() {
     var time = timer.getTimeLeft();
     return msToString(time);
+  },
+  userIsOwner: function(){
+    return this.ownerId === Meteor.user()._id;
   }
 });
 
@@ -115,32 +130,10 @@ Template.roomPage.created = function(){
 }
 var session = null; // rem to change to var
 Template.roomPage.rendered = function(){
-  /*Session.set('openTokData', undefined);
-  Meteor.call('getOpenTokData',this.data._id ,function(error,data){
-    if(error){
-      console.log('getOpenTokData error:' + error.reason);
-    } else{
-      Session.set('openTokData',data);
-    }
-  });*/
-  
-  //bootbox.prompt
-  timer.setTimeMin(25,5);
+
+  timer.setTimeMin(2,1);
   timer.init();
-  
-  
-  /*Deps.autorun(function(computation){
-    var data;
-    if( ( data = Session.get('openTokData') ) !== undefined) {
-      
-      session = TB.initSession(data.sessionId);
-      session.addEventListener('sessionConnected', sessionConnectedHandler);
-      session.addEventListener('streamCreated', streamCreatedHandler);
-      session.connect(Config.apiKey,data.token);
-      computation.stop();
-    }
-  });*/
-  
+
 };
 
 function sessionConnectedHandler(event){
@@ -188,5 +181,17 @@ Template.roomPage.events({
   'click #break': function(e){
     e.preventDefault();
     timer.breakTimer(function(){alert('finished break')});
+  },
+  'click #stop': function(e){
+    e.preventDefault();
+    timer.stop();
+  },
+  'click #pause': function(e){
+    e.preventDefault();
+    timer.pause();
+  },
+  'click #resume': function(e){
+    e.preventDefault();
+    timer.resume();
   }
 });
