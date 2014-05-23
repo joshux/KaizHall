@@ -1,21 +1,71 @@
-var timer = (function(){
-  var _dep = new Deps.Dependency;
-  var delay = 100;
+var Timer = function(){
+  var self = this;
+  self._dep = new Deps.Dependency;
+  self.delay = 100;
 
-  var study;// true: study, false: break
-  var timeLeft;
-  
-  var pomoMin; // 50/10 or 25/5
-  var breakMin;
-  
-  var currentState; // 0: stop, 1: Run study, 2: Run break
-  var intervalId;
-  var currentDate;
-  
-  var callback;
-  var paused;
+  self.study;// true: study, false: break
+  self.timeLeft;
+    
+  self.pomoMin; // 50/10 or 25/5
+  self.breakMin;
+    
+  self.currentState; // 0: stop, 1: Run study, 2: Run break
+  self.intervalId;
+  self.currentDate;
+    
+  self.callback;
+  self.paused;
+};
+
+Timer.prototype = {
+  init: function(){
+    setTimeLeft(0);
+  },
+  runTimer: function(cb){
+    callback = cb;
+    currentDate = new Date();
+    intervalId = setInterval(update, delay);
+  },
+  setTimeLeft: function(time){
+    _dep.changed();
+    timeLeft = time;
+  },
+  getTimeLeft: function(){
+    _dep.depend();
+    return timeLeft; 
+  },
+  setTimeMin: function(pomoMinutes, breakMinutes){
+    pomoMin = pomoMinutes;
+    breakMin = breakMinutes;
+  },
+  start: function(cb){
+    stop();
+    timeLeft = pomoMin*1000*60;
+    runTimer(cb);
+  },
+  breakTimer: function(cb){
+    stop();
+    timeLeft = breakMin*1000*60;
+    runTimer(cb);
+  },
+  pause: function(cb){
+    paused = true;
+    clearInterval(intervalId);
+    cb && cb();
+  },
+  stop: function(cb){
+    setTimeLeft(0);
+    clearInterval(intervalId);
+    cb && cb();
+  },
+  resume: function(){
+    if(paused){
+      paused = false;
+      runTimer(callback);
+    }
+  },
   //private 
-  function update(){
+  _update: function(){
     var newDate = new Date();
     setTimeLeft( getTimeLeft() - (newDate - currentDate) );// change to new Date()...
     currentDate = newDate;
@@ -25,62 +75,26 @@ var timer = (function(){
       return;
     }
   }
-  //public
-  function runTimer(cb){
-    callback = cb;
-    currentDate = new Date();
-    intervalId = setInterval(update, delay);
-  }
-  
-  function setTimeLeft(time){
-    _dep.changed();
-    timeLeft = time;
-  }
-  function init(){
-    setTimeLeft(0);
-  }
-  function getTimeLeft(){
-    _dep.depend();
-    return timeLeft; 
-  }
-  function setTimeMin(pomoMinutes, breakMinutes){
-    pomoMin = pomoMinutes;
-    breakMin = breakMinutes;
-  }
-  function start(cb){
-    stop();
-    timeLeft = pomoMin*1000*60;
-    runTimer(cb);
-  }
-  function breakTimer(cb){
-    stop();
-    timeLeft = breakMin*1000*60;
-    runTimer(cb);
-  }
-  function pause(cb){
-    paused = true;
-    clearInterval(intervalId);
-    cb && cb();
-  }
-  function stop(cb){
-    setTimeLeft(0);
-    clearInterval(intervalId);
-    cb && cb();
-  }
-  function resume(){
-    if(paused){
-      paused = false;
-      runTimer(callback);
+};
+
+
+var timerStore = {
+  nextId: 0,
+  cache: {},
+  addTimer: function(timer){
+    if(!timer.id){
+      timer.id = nextId++;
+      cache[timer.id] = timer;
+      return true;
+    } else{
+      return false;
     }
   }
-  return {
-    setTimeMin: setTimeMin,
-    init: init,
-    start: start,
-    breakTimer: breakTimer,
-    pause: pause,
-    stop: stop,
-    resume: resume,
-    getTimeLeft: getTimeLeft
-  };
-}());
+}
+Meteor.methods({
+  'timer/createTimer': function(){
+    var timer = new Timer();
+    timerStore.addTimer(timer);
+    return timer.id;
+  }
+});
